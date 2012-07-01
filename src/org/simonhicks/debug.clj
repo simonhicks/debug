@@ -2,8 +2,8 @@
   (:import [clojure.lang RT]
            [java.lang StringBuilder]
            [java.io LineNumberReader PushbackReader])
-  (:use [clojure.contrib.io :only (reader)]
-        [clojure.contrib.str-utils :only (re-gsub)]))
+  (:require [clojure.java.io :as io]
+            [clojure.string :as s]))
 
 (defmacro db 
   "prepend this to a form to see what it evaluates to each time it is executed.
@@ -59,7 +59,7 @@
 
   (defmacro cl
     [& more]
-    `(mg (fn [c#] (re-gsub #\"class \" \"\" (str (class c#)))) ~@more))
+    `(mg (fn [c#] (s/replace \"class \" \"\" (str (class c#)))) ~@more))
   "
   [msg-fn & form] 
    `(let [result# ~form]
@@ -90,14 +90,14 @@
   => [1 2 3 4 5 6 7 8 9]
   "
   [& more]
-  `(mg (fn [c#] (re-gsub #"class " "" (str (class c#)))) ~@more))
+  `(mg (fn [c#] (s/replace "class " "" (str (class c#)))) ~@more))
 
 (defn get-src-str
   "Returns the source for whatever is bound to sym as a string if it can be found"
   [sym]
   (let [{:keys [file line]} (eval `(meta (var ~sym)))]
     (when-let [strm (.getResourceAsStream (RT/baseLoader) file)]
-      (let [lrdr (LineNumberReader. (reader strm))
+      (let [lrdr (LineNumberReader. (io/reader strm))
             strb (StringBuilder.)]
         (dotimes [_ (dec line)] (.readLine lrdr))
         (let [rdr (proxy [PushbackReader] [lrdr]
@@ -114,7 +114,7 @@
   [sym]
   (let [{:keys [file line]} (eval `(meta (var ~sym)))]
     (when-let [strm (.getResourceAsStream (RT/baseLoader) file)]
-      (let [lrdr (LineNumberReader. (reader strm))]
+      (let [lrdr (LineNumberReader. (io/reader strm))]
         (dotimes [_ (dec line)] (.readLine lrdr))
         (read (PushbackReader. lrdr))))))
 

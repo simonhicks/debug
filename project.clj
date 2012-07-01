@@ -1,4 +1,3 @@
-(defproject org.clojars.shicks/debug "1.0.0"
+(defproject org.clojars.shicks/debug "1.1.1"
   :description "A collection of basic debugging tools"
-  :dependencies [[org.clojure/clojure "1.2.0"]
-                 [org.clojure/clojure-contrib "1.2.0"]])
+  :dependencies [[org.clojure/clojure "1.4.0"]])
